@@ -1,0 +1,46 @@
+1) es un puntero a una funcion que devuelve un int y recibe como parametros un puntero a un short int y un arreglo de 3 char
+
+2) a) variable global static: se guarda en el data segment en caso de estar inicializada sino en el bss segment,se inicializa una unica vez y puede accederse a lo largo de todo el archivo en el que se  la declara.La variable perdura hasta que se termine el programa
+   
+   b) variable local static: se guarda en el data segment ,es inicializada por el programador,puede accederse adentro de la funcion en la que se la declara y mantiene su valor una vez que se sale de la funcion.la variable perdura hasta que se termine el programa.
+   
+   c) atributo de clase static: es un atributo de clase que puede accederse sin necesidad de tener una instancia de la clase,es inicializada por el programador y toma el mismo valor para todas las instancias del objeto. Se guarda en el data segment y su scope depende de la visibilidad que se le de (punlic,protected,private)
+
+4) protegiendo el recurso compartido utilizando un mutex,de esta forma cuando un thread acceda al recurso intentara bloquear el mutex,es caso de estar desbloqueado lo lograra, operara sobre el recurso y cuando termine liberara el mutex. Si el mutex estuviese bloqueado el thread no podra acceder al recurso hasta que el mutex sea liberado.
+De esta forma no tendriamos problemas de consisntencia ya que nos asegurariamos que un solo thread acceda al recurso sin ser interrumpido por otro.
+
+#include <mutex>
+#include <iostream>
+
+std::mutex mtx;
+int contador = 0;
+
+void foo() {
+	std::lock_guard lock(mtx);
+	contador++;	
+	std::cout << "contador = " << contador << std::endl;
+}
+
+int main () {
+	std::thread th1(foo);
+	std::thread th2(foo);
+
+	th1.join();
+	th2.join();
+
+	return 0;
+}
+
+Otra forma seria utilizar variables atomic(solo pueden utilizarse con ciertos tipos de dato)
+
+6) una macro de C puede ser de tipo objeto o de tipo funcion, en el que se asocia un alias o simbolo a un valor o definicion especifica.Durante el proceso de pre-compilacion al encontrarse un alias,este codigo se reemplaza por su valor asociado o su respectiva definicion.
+
+Una buena practica para macros en C puede ser la de utilizar parentesis para la separacion de terminos en las macros de tipo funcion.
+y utilizar mayusculas para los alias.
+
+7)
+Precompilacion: Se toma el codigo fuente y se reemplazan las directivas al pre-compilador, (ej:#define,#ifndef),se eliminan comentarios y se realiza la expansion de macros.
+
+Compilacion: Recibe el codigo fuente procesado proveniente de la etapa anterior y revisa la sintaxis del codigo, en caso de tener un error de sintaxis es en esta etapa en donde salta.Ademas se procesa el codigo generando codigo objeto o archivos .o
+
+Enlazado: Recibe el codigo objeto proveniente de la etapa anterior y se encarga de enlazar la declaraciones con sus respectivas definiciones.En caso de olvidarnos la inclusion de algun .h o libreria es en esta etapa donde saltaria el error.Finalmente,se devuelve el archivo ejecutable
